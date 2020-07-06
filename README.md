@@ -30,3 +30,10 @@ docker exec -it pet-auction_web_1 python manage.py shell
 ```bash
 docker exec -it pet-auction_db_1 /bin/bash
 ```
+
+- Apply migrations into the container
+```bash
+./manage.py migrate
+```
+
+
