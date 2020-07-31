@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
@@ -48,14 +48,15 @@ class Lot(SystemBaseModel):
         self.pet.owner = best_bet.buyer
         self.pet.save()
 
+    @transaction.atomic
     def _move_amount(self, best_bet: 'Bet'):
         """
         Move amount of money from buyer's balance to seller's one
         """
         self.seller.balance += best_bet.bid
-        best_bet.balance -= best_bet.bid
+        best_bet.buyer.balance -= best_bet.bid
         self.seller.save()
-        best_bet.save()
+        best_bet.buyer.save()
 
     def _set_to_closed(self) -> None:
         """
@@ -69,6 +70,7 @@ class Lot(SystemBaseModel):
             return True
         return False
 
+    @transaction.atomic
     def close(self) -> None:
         """
         Close Lot.
